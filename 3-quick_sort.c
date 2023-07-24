@@ -1,89 +1,78 @@
 #include "sort.h"
-
 /**
- * swap - swaps positions of two elements in an array
- *
- * @array: pointer to array containing elements to swap
- * @idx1: index of first element
- * @idx2: index of second element
- * @size: size of array
- *
- */
-void swap(int *array, int idx1, int idx2, size_t size)
+*swap - the positions of two elements into an array
+*@array: array
+*@item1: array element
+*@item2: array element
+*/
+void swap(int *array, ssize_t item1, ssize_t item2)
 {
-	int temp;
+	int tmp;
 
-	temp = array[idx1];
-	array[idx1] = array[idx2];
-	array[idx2] = temp;
-	print_array(array, size);
+	tmp = array[item1];
+	array[item1] = array[item2];
+	array[item2] = tmp;
 }
-
 /**
- * partition - partitions array around the pivot
- *
- * @array: Array to partition
- * @lb: lower boundary
- * @ub: upper boundary
- * @size: size of the array
- *
- * Return: index of end
+ *lomuto_partition - lomuto partition sorting scheme implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: size array
+ *Return: return the position of the last element sorted
  */
-
-int partition(int *array, int lb, int ub, size_t size)
+int lomuto_partition(int *array, ssize_t first, ssize_t last, size_t size)
 {
-	int pivot, start, end;
+	int pivot = array[last];
+	ssize_t current = first, finder;
 
-	pivot = array[lb];
-	start = lb;
-	end = ub;
-
-	while (start < end)
+	for (finder = first; finder < last; finder++)
 	{
-		while (array[start] <= pivot)
-			start++;
-		while (array[end] > pivot)
-			end--;
-		if (start < end)
+		if (array[finder] < pivot)
 		{
-			swap(array, start, end, size);
+			if (array[current] != array[finder])
+			{
+				swap(array, current, finder);
+				print_array(array, size);
+			}
+			current++;
 		}
 	}
-	swap(array, lb, end, size);
-
-	return (end);
-}
-
-/**
- *  recursive_sort - sorts an array partition recursively
- * @array: array to sort
- * @lb: lower boundary
- * @ub: upper boundary
- * @size: size of the array
- */
-void recursive_sort(int *array, int lb, int ub, size_t size)
-{
-	int loc;
-
-	if (lb < ub)
+	if (array[current] != array[last])
 	{
-		loc = partition(array, lb, ub, size);
-		recursive_sort(array, lb, loc - 1, size);
-		recursive_sort(array, loc + 1, ub, size);
+		swap(array, current, last);
+		print_array(array, size);
+	}
+	return (current);
+}
+/**
+ *qs - qucksort algorithm implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: array size
+ */
+void qs(int *array, ssize_t first, ssize_t last, int size)
+{
+	ssize_t position = 0;
+
+
+	if (first < last)
+	{
+		position = lomuto_partition(array, first, last, size);
+
+		qs(array, first, position - 1, size);
+		qs(array, position + 1, last, size);
 	}
 }
-
 /**
- * quick_sort - sorts an array of integers in
- *		ascending order using the Quick sort algorithm
- * @array: pointer of array to sort.
- * @size: size of the array
+ *quick_sort - prepare the terrain to quicksort algorithm
+ *@array: array
+ *@size: array size
  */
 void quick_sort(int *array, size_t size)
 {
-	if (array == NULL)
+	if (!array || size < 2)
 		return;
-	if (size < 2)
-		return;
-	recursive_sort(array, 0, (int)size - 1, size);
+	qs(array, 0, size - 1, size);
 }

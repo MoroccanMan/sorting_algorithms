@@ -1,54 +1,46 @@
 #include "sort.h"
-
 /**
- * swap_two - swap to doubly linked list elements
- * @a: left element
- * @b: right element
- * @list: all doubly linked list
- * Return: pointer to a element (actual)
- */
-listint_t *swap_list(listint_t *x, listint_t *y, listint_t **list)
-{
-	if (x->prev)
-		(x->prev)->next = y;
-	else
-		*list = y, y->prev = NULL;
-	if ((y->next))
-		(y->next)->prev = x;
-	y->prev = x->prev;
-	x->prev = y;
-	x->next = y->next;
-	y->next = x;
-	return (x);
-}
-
-/**
- * insertion_sort_list - sorts a doubly linked list of integers 
- *			in ascending order using the Insertion sort algorithm
- *
- * @list: doubly linked-list to sort
- *
+ * insertion_sort_list - function that sorts a doubly linked list
+ * of integers in ascending order using the Insertion sort algorithm
+ * @list: Dobule linked list to sort
  */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *current, *temp, *prev;
+	listint_t *node;
 
-	if (!list || !(*list) || !(*list)->next)
+	if (list == NULL || (*list)->next == NULL)
 		return;
-
-	current = (*list)->next;
-	while (current)
+	node = (*list)->next;
+	while (node)
 	{
-		temp = current;
-		prev = current->prev;
-		while ((temp->prev) && (prev->n > temp->n))
+		while ((node->prev) && (node->prev->n > node->n))
 		{
-			current = swap_list(prev, temp, list);
+			node = swap_node(node, list);
 			print_list(*list);
-			if (!temp->prev)
-				break;
-			prev = temp->prev;
 		}
-		current = current->next;
+		node = node->next;
 	}
+}
+/**
+ *swap_node - swap a node for his previous one
+ *@node: node
+ *@list: node list
+ *Return: return a pointer to a node which was enter it
+ */
+listint_t *swap_node(listint_t *node, listint_t **list)
+{
+	listint_t *back = node->prev, *current = node;
+	/*NULL, 19, 48, 9, 71, 13, NULL*/
+
+	back->next = current->next;
+	if (current->next)
+		current->next->prev = back;
+	current->next = back;
+	current->prev = back->prev;
+	back->prev = current;
+	if (current->prev)
+		current->prev->next = current;
+	else
+		*list = current;
+	return (current);
 }
